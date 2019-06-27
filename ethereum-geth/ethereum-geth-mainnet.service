@@ -1,0 +1,18 @@
+[Unit]
+Description=Geth Ethereum Daemon
+After=network.target syslog.target
+
+[Service]
+User=ethereum
+Group=ethereum
+Environment=HOME=/opt/ethereum
+Type=simple
+ExecStart=/usr/local/bin/geth --syncmode fast --nousb --cache 16384 --rpc --rpcport 8545 --rpcapi eth,web3,txpool,net --ws --wsorigins=* --wsapi eth,web3,txpool,net --wsport 8546 --port 30303
+KillMode=process
+KillSignal=SIGINT
+TimeoutStopSec=90
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
