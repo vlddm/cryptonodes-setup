@@ -3,47 +3,47 @@ Ubuntu 18.04 is recommended
 Create user and install packages:
 
 ```
-useradd --create-home btc
-loginctl enable-linger btc
+useradd --create-home --home-dir /opt/bitcoin bitcoin
+useradd --create-home --home-dir /opt/electrumx-bitcoin electrumx-bitcoin
 apt install python3-pip
 ```
-Login as btc user (sudo/su/ssh) 
+
 Download distributives:
 ```
+cd /opt/bitcoin
 wget https://bitcoin.org/bin/bitcoin-core-0.18.0/bitcoin-0.18.0-x86_64-linux-gnu.tar.gz
 tar -xf bitcoin-0.18.0-x86_64-linux-gnu.tar.gz
 ln -s bitcoin-0.18.0 bitcoin
-
-wget https://github.com/kyuupichan/electrumx/archive/1.12.0.tar.gz
-tar -xf 1.12.0.tar.gz
-ln -s electrumx-1.12.0 electrumx
-pip3 install websockets plyvel aiorpcX aiohttp async-timeout pylru attrs
+chown -R bitcoin:bitcoin /opt/bitcoin
 ```
 
 Now need to setup some configs
 ```
 mkdir -p ~/.bitcoin
-wget https://raw.githubusercontent.com/vlddm/cryptonodes-setup/master/bitcoin/bitcoin.conf -O ~/.bitcoin/bitcoin.conf
-wget https://raw.githubusercontent.com/vlddm/cryptonodes-setup/master/bitcoin/.electrumx.conf -O ~/.electrumx.conf
+wget https://raw.githubusercontent.com/vlddm/cryptonodes-setup/master/bitcoin/bitcoin.conf -O /opt/bitcoin/.bitcoin/bitcoin.conf
+wget https://raw.githubusercontent.com/vlddm/cryptonodes-setup/master/bitcoin/electrumx.conf -O /opt/electrumx-bitcoin/config
 
-mkdir -p ~/.config/systemd/user/
-wget https://raw.githubusercontent.com/vlddm/cryptonodes-setup/master/bitcoin/bitcoin.service -O ~/.config/systemd/user/bitcoin.service
-wget https://raw.githubusercontent.com/vlddm/cryptonodes-setup/master/bitcoin/electrumx.service -O ~/.config/systemd/user/bitcoin/electrumx.service
+wget https://raw.githubusercontent.com/vlddm/cryptonodes-setup/master/bitcoin/bitcoin.service -O /etc/systemd/system/bitcoin.service
+wget https://raw.githubusercontent.com/vlddm/cryptonodes-setup/master/bitcoin/electrumx-bitcoin.service -O /etc/systemd/system/electrumx-bitcoin.service
 ```
 
 Start it up:
 ```
-export XDG_RUNTIME_DIR="/run/user/$UID"
-export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
-systemctl --user daemon-reload
-systemctl --user start bitcoin.service
-systemctl --user start electrumx.service
+systemctl daemon-reload
+systemctl enable bitcoin.service
+systemctl start bitcoin.service
 ```
 
-See if its ok:
+When bitcoin node synced we can run electrumx service:
+```
+systemctl enable electrumx-bitcoin.service
+systemctl start electrumx-bitcoin.service
+```
+
+Check if its ok:
 ```
 ps auxww | fgrep bitcoind
 ps auxww | fgrep electrumx_server
-tail -f ~/.bitcoin/debug.log
-tail -f ~/.electrumxdb/log.txt 
+journalctl -u bitcoin.service
+journalctl -u electrumx-bitcoin.service
 ```
