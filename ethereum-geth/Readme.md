@@ -1,6 +1,7 @@
 Ubuntu 18.04 is recommended
 
-All commands running as root
+All commands running as root.
+
 Create user:
 ```
 useradd --create-home --home-dir /opt/ethereum ethereum
