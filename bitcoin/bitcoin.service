@@ -1,24 +1,15 @@
 [Unit]
-Description=Bitcoin node service
+Description=Electrumx Bitcoin service
 After=network.target
+Requires=bitcoin.service
 
 [Service]
-User=bitcoin
-Group=bitcoin
-Environment=HOME=/opt/bitcoin
-ExecStart=/opt/bitcoin/bitcoin/bin/bitcoind
-Restart=on-failure
-TimeoutStopSec=10min
-
-PrivateTmp=true
-ProtectSystem=full
-NoNewPrivileges=true
-PrivateDevices=true
-MemoryDenyWriteExecute=true
-TimeoutStopSec=60s
-TimeoutStartSec=2s
-StartLimitInterval=120s
-StartLimitBurst=5
+User=electrumx-bitcoin
+Environment=DB_DIRECTORY=/opt/electrumx-bitcoin/.electrumxdb
+EnvironmentFile=/opt/electrumx-bitcoin/config
+ExecStart=/usr/local/bin/electrumx_server
+LimitNOFILE=8192
+TimeoutStopSec=30min
 
 [Install]
 WantedBy=multi-user.target
