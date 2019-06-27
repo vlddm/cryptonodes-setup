@@ -22,5 +22,5 @@ systemctl start ethereum-geth-mainnet.service
 ```
 Check if node is running well: 
 `ps auxww | fgrep geth` should return process with full agruments and metadata.
-If not use `journalctl -u geth-mainnet.service` to check logs
+If not use `journalctl -u ethereum-geth-mainnet.service` to check logs
 
