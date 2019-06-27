@@ -3,10 +3,22 @@ Description=Bitcoin node service
 After=network.target
 
 [Service]
-ExecStart=/bin/bash -c "exec ${HOME}/bitcoin/bin/bitcoind"
-Type=exec
+User=bitcoin
+Group=bitcoin
+Environment=HOME=/opt/bitcoin
+ExecStart=/opt/bitcoin/bitcoin/bin/bitcoind
 Restart=on-failure
 TimeoutStopSec=10min
 
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+MemoryDenyWriteExecute=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
